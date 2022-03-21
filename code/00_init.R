@@ -25,3 +25,5 @@ runoff_month<-runoff_dt[,.(mon,mon_mean)]
 runoff_month
 unique(runoff_month)
 saveRDS(runoff_dt,file="./data/dt_example.rds.")
+gitcreds::gitcreds_set()
+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install.packages(("gitcreds"))
