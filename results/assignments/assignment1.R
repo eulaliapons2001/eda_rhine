@@ -15,7 +15,7 @@ library(data.table)
 
 
 runoff_dt <- data.table(runoff_pc)
-select(runoff_pc, c(1:3))
+
 runoff_pc
 
 runoff_dt[, month := month(time)]
