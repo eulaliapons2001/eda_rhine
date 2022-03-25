@@ -23,4 +23,4 @@ runoff_day_raw[, 'hh:mm' := NULL]
 colnames(runoff_day_raw)[3:4] <- c('date', 'value')
 runoff_day_raw[, date := as.Date(date)]
 runoff_day_raw
-
+saveRDS(runoff_day_raw, './data/runoff_day_raw.rds')
