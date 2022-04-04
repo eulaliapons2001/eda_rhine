@@ -1,0 +1,46 @@
+---
+title: "06 Returning Home"
+output: 
+  html_document:
+    toc: true
+    number_sections: true
+    pandoc_args: 
+      ["--number-sections",
+      "--number-offset=1"]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = '../..')
+library(data.table)
+library(ggplot2)
+
+runoff_summary <- readRDS('data/runoff_summary.rds')
+head(runoff_summary)
+aa <- data.frame(ID = 1:10,  Value = rnorm(10), Type = sample(c('A', 'B', 'C', 'D'), 10, replace = TRUE))
+knitr::kable(aa, caption = "A simple table with kable()")
+runoff_summary <- readRDS('data/runoff_summary.rds')
+knitr::kable(runoff_summary[, .(sname, altitude, start, end)], caption = "A better table with kable()", digits = 2)
+runoff_summary <- runoff_summary[sname != "DOMA"]
+runoff_summary
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
