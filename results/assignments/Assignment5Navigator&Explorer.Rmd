@@ -1,0 +1,123 @@
+---
+title: "assignment 5"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(data.table)
+library(ggplot2)
+runoff_summary <- readRDS('data/runoff_summary.rds')
+runoff_stats <- readRDS('data/runoff_stats.rds')
+runoff_month <- readRDS('data/runoff_month.rds')
+runoff_summer <- readRDS('data/runoff_summer.rds')
+runoff_winter <- readRDS('data/runoff_winter.rds')
+runoff_year <- readRDS('data/runoff_year.rds')
+runoff_year[, value_norm := (value - mean(value)) / sd(value), by = sname]
+n_stations <- nrow(runoff_summary)
+colset_4 <-  c("#D35C37", "#BF9A77", "#D6C6B9", "#97B8C2")
+ggplot(runoff_year[year > 1980], aes(x = year, y = value_norm, col = sname)) +
+  geom_line() +
+  geom_point() + 
+  scale_color_manual(values = colorRampPalette(colset_4)(n_stations)) +
+  theme_bw()
+#To write my story of the EDA Rhine Basin using 3-5 graphs/plots/tables, I chose to use 3 graphs because
+#for me they are more representative than a table because you can see patterns and understand them more
+#easily. For this first graph, I decided to illustrate the runoff annual mean of each station and the years.
+#Firstly, it is important to see how the runoff changes over the years, if it increases or decreases. It can
+#clearly be seen than the runoff of the Rhine river decreases in all stations. However, this decrease of the 
+#of the runoff is not linear, it has been fluctuating all these past years. Moreover, in the past, the stations
+#situated in the upstream showed a lower runoff than the ones in the midstream and downstream. However, 
+#in the most recent years, most of the years data was collected, the highest runoff were in the upstream,
+#meaning that temperature increased and it affected the snow and therefore there is a higher runoff than in
+#the past. 
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+library(data.table)
+library(ggplot2)
+runoff_summary <- readRDS('data/runoff_summary.rds')
+runoff_stats <- readRDS('data/runoff_stats.rds')
+runoff_month <- readRDS('data/runoff_month.rds')
+runoff_summer <- readRDS('data/runoff_summer.rds')
+runoff_winter <- readRDS('data/runoff_winter.rds')
+runoff_year <- readRDS('data/runoff_year.rds')
+runoff_month_mean <- runoff_month[, .(value = mean(value)), .(month, sname)]
+to_plot <- runoff_month[runoff_summary[, .(sname, category)], on = 'sname']
+
+ggplot(to_plot, aes(x = factor(month), y = value, fill = category, group = month)) +
+  geom_boxplot() +
+  facet_wrap(~sname, scales = 'free') +
+  scale_fill_manual(values = colset_4[c(1, 2, 4)]) +
+  xlab(label = "Month") +
+  ylab(label = "Runoff (m3/s)") +
+  theme_bw()
+#For the second graph I decided to include a boxplot from each station with the different months.
+#In this study it was important to analyze the runoff from the different seasons (mainly summer and winter)
+#to see the effects of climate change in the runoff. The hypothesis were that in the winter there is a 
+#higher runoff than in the summer because temperature increases and melts the snow and it is later
+#transformed into water that ends up in the river. Also, it is crucial to classify the different stations
+#between upstream, midstream and downstream because as the snow melts, it goes to the river and the upstream
+#runoff increases, but this does not mean that the midstream and downstream runoff also increases because
+#if it's spring or summer, the temperatures are high and therefore evaporation is higher, hence the runoff
+#lowers. The stations situated in the upstream and midstream have higher runoffs between may and September
+#and it can be associated with the higher temperatures and the snow melting. Whereas in the downstream stations
+#there are lower runoffs between august and November and this could be mainly explained with the temperature
+#increase but also maybe more water was taken out for human activities.In addition, precipitation during 
+#winter can increase, but they can decrease during summer. Related to the first figure, this is why runoff 
+#decreases yearby year because precipitation during winter increases but at the same time, evapotranspiration
+#during the warm month increases at a faster level. Nonetheless, not all the stations can be representative
+#and hence further investigations need to be made to choose the ones that express more accurate what happens
+#in the river's runoff.
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+library(data.table)
+library(ggplot2)
+runoff_summary <- readRDS('data/runoff_summary.rds')
+runoff_stats <- readRDS('data/runoff_stats.rds')
+runoff_month <- readRDS('data/runoff_month.rds')
+runoff_summer <- readRDS('data/runoff_summer.rds')
+runoff_winter <- readRDS('data/runoff_winter.rds')
+runoff_year <- readRDS('data/runoff_year.rds')
+year_thres <- 1980
+to_plot <- rbind(cbind(runoff_winter, season = factor('winter')), 
+                 cbind(runoff_summer, season = factor('summer'))) 
+
+to_plot[year < year_thres, period := factor('1950-1980')]
+to_plot[year >= year_thres, period := factor('1981-2016')]
+to_plot[year < year_thres, period := factor('1950-1980')]
+to_plot[year >= year_thres, period := factor('1981-2016')]
+
+to_plot <- to_plot[year >= 1950]
+
+ggplot(to_plot, aes(season, value, fill = period)) +
+  geom_boxplot() +
+  facet_wrap(~sname, scales = 'free_y') +
+  scale_fill_manual(values = colset_4[c(4, 1)]) +
+  xlab(label = "Season") +
+  ylab(label = "Runoff (m3/s)") +
+  theme_bw()
+#For the last graph, I chose one that compared the different runoff from different years to see the behavior
+#of the runoff with climate change between the seasons summer and winter. Stations situated in the up and 
+#midstream have a higher runoff during the summer between the years 1981-2016 compared to the mean between the #years 1950-1980. Stations in the downstream seem to have a slight decrease in the mean runoff during the summer. On the other hand, during the winter, all stations had a lower runoff in the past than in the recent years. This could again be explained by the snow melting in higher altitudes. The decrease of runoff during
+#the summer could also be explained by other variables, such as more dams built, more water being used for
+#agriculture or for domestic purposes, new factories built near the river that take the water from it, etc. 
+#Nevertheless, the initial hypothesis are confirmed, higher winter runoff due to snow melting and increased
+#precipitaion and lower summer discharge because of reduced winter storage and higher evapotranspiration 
+#due to higher global temperatures. 
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
